@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Compiled Native Apps & Binaries
+AltiPulseApp
+*.o
+*.app
+
+# OS Artifacts
+.DS_Store
+._*

@@ -1,26 +1,424 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --canvas-obsidian: #050204;
+  --surface-dark: #0b0609;
+  --accent-magma: #FF1E44;
+  --accent-amber: #FF6B00;
+  --accent-solar: #FFE600;
+  --text-luminous: #FFFFFF;
+  --text-muted: #9E9598;
+  --glass-specular: rgba(255, 255, 255, 0.15);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+* { box-sizing: border-box; }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  margin: 0; padding: 0;
+  width: 100%; min-height: 100vh;
+  overflow-x: hidden;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--canvas-obsidian);
+  color: var(--text-luminous);
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-brand { font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif; }
+.font-tech  { font-family: 'Space Grotesk', sans-serif; }
+.font-mono-data {
+  font-family: 'JetBrains Mono', monospace;
+  font-feature-settings: "tnum";
+}
+
+/* ===== VERTICAL FLUTED GLASS OVERLAY ===== */
+.fluted-glass-overlay {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0px, transparent 18px,
+    rgba(255, 255, 255, 0.015) 19px,
+    rgba(0, 0, 0, 0.18) 20px,
+    transparent 21px
+  );
+  background-size: 21px 100%;
+}
+
+/* ===== TOP NAVBAR GLASS ===== */
+.navbar-glass {
+  background: rgba(14, 8, 12, 0.65);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ===== LAPTOP CARD GLASS (EXPANSIVE WIDESCREEN - NO GREY OUTLINE) ===== */
+.laptop-card-glass {
+  background: rgba(12, 7, 10, 0.75);
+  backdrop-filter: blur(36px) saturate(190%);
+  -webkit-backdrop-filter: blur(36px) saturate(190%);
+  border: none;
+  box-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.92),
+    0 0 60px rgba(246, 29, 87, 0.08);
+}
+
+/* ===== WIDGET BOX (grey low-transparency boxes) ===== */
+.widget-box {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.widget-box:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.16);
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+/* ===== INPUT FIELDS ===== */
+.liquid-glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-glass-input:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(246, 29, 87, 0.6);
+  box-shadow: 0 0 20px rgba(246, 29, 87, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+/* ===== LIQUID GLASS BUTTON BASE ===== */
+.liquid-glass-button {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.35);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-glass-button:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.09) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.38);
+  transform: translateY(-1.5px);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.45),
+    0 0 20px rgba(255, 255, 255, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.liquid-glass-button:active {
+  transform: translateY(0.5px);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+/* ===== LIQUID GLASS SOCIAL BUTTON ===== */
+.liquid-glass-social {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.04) 50%,
+    rgba(255, 255, 255, 0.015) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.28);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-glass-social:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.36);
+  transform: translateY(-1.5px);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(255, 255, 255, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.45);
+}
+
+/* ===== LIQUID GLASS CRIMSON / RUBY FLAME (MATCHING USER GRADIENT) ===== */
+.liquid-glass-crimson {
+  background: linear-gradient(
+    135deg,
+    #7d0c2e 0%,
+    #ba1346 32%,
+    #f61d57 70%,
+    #ff456e 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  box-shadow:
+    0 10px 32px rgba(246, 29, 87, 0.45),
+    0 0 25px rgba(255, 69, 110, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-glass-crimson:hover {
+  filter: brightness(1.14);
+  transform: translateY(-2px) scale(1.008);
+  box-shadow:
+    0 14px 40px rgba(246, 29, 87, 0.6),
+    0 0 34px rgba(255, 69, 110, 0.4),
+    inset 0 1px 2.5px rgba(255, 255, 255, 0.85);
+}
+
+.liquid-glass-crimson:active {
+  transform: translateY(0.5px) scale(0.99);
+}
+
+/* ===== LIQUID GLASS CRYSTAL ICON BUTTON (LIGHTNING) ===== */
+.liquid-glass-crystal {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 230, 0, 0.12) 50%,
+    rgba(246, 29, 87, 0.08) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 230, 0, 0.45);
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.35),
+    0 0 22px rgba(255, 230, 0, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-glass-crystal:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 230, 0, 0.22) 50%,
+    rgba(246, 29, 87, 0.14) 100%
+  );
+  border-color: rgba(255, 230, 0, 0.75);
+  transform: translateY(-2px) scale(1.08);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.45),
+    0 0 32px rgba(255, 230, 0, 0.45),
+    inset 0 1px 2.5px rgba(255, 255, 255, 0.85);
+}
+
+.liquid-glass-crystal:active {
+  transform: translateY(0.5px) scale(0.95);
+}
+
+/* ===== AMBIENT SUPER BLUR FOR RUNNING_MAN_HOR ===== */
+.video-ambient-blur {
+  filter: blur(44px) brightness(0.65) saturate(1.35);
+  transform: scale(1.15);
+  transition: filter 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.video-ambient-home {
+  filter: blur(52px) brightness(0.35) saturate(0.8);
+  transform: scale(1.15);
+  transition: filter 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===== SHOWCASE VIDEO GRADIENT BLEND ===== */
+.video-fade-edge {
+  background: linear-gradient(
+    to right,
+    rgba(12, 7, 10, 0.96) 0%,
+    rgba(12, 7, 10, 0.6) 22%,
+    transparent 50%
+  );
+}
+
+/* ===== NAV PILL ACTIVE STATE ===== */
+.nav-pill-active {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+/* ===== MINIMAL SCROLLBAR ===== */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 9999px; }
+
+/* ===== ANIMATION UTILITIES ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anim-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-fade-in { animation: fadeIn 0.5s ease both; }
+.anim-slide-down { animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+
+/* ===== YELLOW EDGE GLOW TRANSITION ===== */
+@keyframes edgePulse {
+  0% {
+    opacity: 0;
+    box-shadow: inset 0 0 100px rgba(255, 230, 0, 0.65), inset 0 0 35px rgba(255, 230, 0, 0.45);
+  }
+  25% {
+    opacity: 1;
+    box-shadow: inset 0 0 85px rgba(255, 230, 0, 0.55), inset 0 0 28px rgba(255, 230, 0, 0.35);
+  }
+  75% {
+    opacity: 0.8;
+    box-shadow: inset 0 0 60px rgba(255, 230, 0, 0.35), inset 0 0 18px rgba(255, 230, 0, 0.2);
+  }
+  100% {
+    opacity: 0;
+    box-shadow: inset 0 0 30px rgba(255, 230, 0, 0);
+  }
+}
+
+.yellow-edge-glow {
+  animation: edgePulse 3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ===== START HIKE / INTERACTIVE TOPO COCKPIT STYLES ===== */
+.map-canvas-container {
+  background: radial-gradient(circle at 50% 40%, #160a12 0%, #0c050a 50%, #050204 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.map-grid-overlay {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.map-3d-tilt {
+  transform: perspective(1000px) rotateX(24deg) scale(1.06);
+  transform-origin: center 60%;
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.map-2d-flat {
+  transform: perspective(1000px) rotateX(0deg) scale(1);
+  transform-origin: center 60%;
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.map-hud-glass {
+  background: rgba(8, 4, 7, 0.94);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75);
+}
+
+.custom-leaflet-marker {
+  background: transparent !important;
+  border: none !important;
+  overflow: visible !important;
+}
+
+.waypoint-map-badge {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.waypoint-map-badge:hover {
+  transform: translate(-50%, calc(-100% + 5px)) scale(1.06) !important;
+  z-index: 9999 !important;
+}
+
+.trail-card-interactive {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.trail-card-interactive:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(246, 29, 87, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(246, 29, 87, 0.15);
+}
+
+.trail-card-selected {
+  background: linear-gradient(145deg, rgba(246, 29, 87, 0.14) 0%, rgba(255, 255, 255, 0.06) 100%);
+  border: 1.5px solid rgba(246, 29, 87, 0.75);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6), 0 0 28px rgba(246, 29, 87, 0.28);
+}
+
+.elevation-hud-panel {
+  background: rgba(16, 8, 14, 0.65);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+@keyframes routeDash {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+.anim-route-dash {
+  stroke-dasharray: 8 6;
+  animation: routeDash 2s linear infinite;
+}
+
+@keyframes beaconPulse {
+  0% { transform: scale(0.9); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0.4; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+.beacon-pulse {
+  animation: beaconPulse 2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
